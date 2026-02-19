@@ -1,3 +1,4 @@
+legacy-cgi
 Flask
 Flask-Login
 pandas
@@ -6,4 +7,5 @@ mongoengine
 googletrans==4.0.0-rc1
 twilio
 werkzeug
+
 gunicorn
