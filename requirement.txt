@@ -1,9 +1,7 @@
-Flask
-Flask-Login
-pandas
-numpy
-mongoengine
-googletrans==4.0.0-rc1
+flask
+flask_sqlalchemy
+flask_login
 twilio
-werkzeug
+pandas
+deep-translator
 gunicorn
