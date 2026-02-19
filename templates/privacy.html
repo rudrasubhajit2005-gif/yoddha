@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4 border-bottom pb-2">{{ translate('Privacy Policy') }}</h2>
+    <div class="card shadow-sm p-4">
+        <h5>1. {{ translate('Data Collection') }}</h5>
+        <p>{{ translate('We collect basic information such as your name, phone number, and order history to process your transactions effectively.') }}</p>
+        
+        <h5>2. {{ translate('How We Use Your Data') }}</h5>
+        <p>{{ translate('Your data is used solely for order management, delivery coordination, and personalized demand forecasting.') }}</p>
+        
+        <h5>3. {{ translate('Security') }}</h5>
+        <p>{{ translate('We use industry-standard security measures to protect your personal information. We do not share your data with third parties without consent.') }}</p>
+    </div>
+</div>
+{% endblock %}

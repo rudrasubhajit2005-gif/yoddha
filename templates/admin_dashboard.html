@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-0 px-md-3 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h1 class="fs-2 text-danger">🛡️ {{ translate('System Admin Panel') }}</h1>
+        <span class="badge bg-dark fs-6">{{ translate('God Mode') }}</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card bg-primary text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ users|length }}</h2>
+                    <p class="mb-0 small text-uppercase fw-bold">{{ translate('Total Users') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-success text-white shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h2 class="display-6 fw-bold mb-0">₹{{ total_revenue }}</h2>
+                    <p class="mb-0 small text-uppercase fw-bold">{{ translate('Total Revenue') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-info text-dark shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ total_sales_kg }}kg</h2>
+                    <p class="mb-0 small text-uppercase fw-bold">{{ translate('Produce Sold') }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card bg-warning text-dark shadow-sm h-100">
+                <div class="card-body text-center">
+                    <h2 class="display-6 fw-bold mb-0">{{ total_inventory }}kg</h2>
+                    <p class="mb-0 small text-uppercase fw-bold">{{ translate('Market Stock') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">🕒 {{ translate('Live Activity Logs') }}</h5>
+                </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-striped table-hover mb-0 align-middle">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>{{ translate('Time (UTC)') }}</th>
+                                <th>{{ translate('User') }}</th>
+                                <th>{{ translate('Action') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr>
+                                <td class="text-muted small">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="fw-bold">{{ log.user.username }} <small class="text-muted">({{ log.user.role }})</small></td>
+                                <td>{{ translate(log.action) }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="text-center text-muted py-3">{{ translate('No activity recorded yet.') }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">👥 {{ translate('Registered Users Directory') }}</h5>
+                </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>ID</th>
+                                <th>{{ translate('Username') }}</th>
+                                <th>{{ translate('Phone') }}</th>
+                                <th>{{ translate('Role') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="text-muted small">#{{ user.id }}</td>
+                                <td class="fw-bold">{{ user.username }}</td>
+                                <td>{{ user.phone }}</td>
+                                <td>
+                                    <span class="badge {% if user.role == 'admin' %}bg-danger{% elif user.role == 'farmer' %}bg-success{% else %}bg-primary{% endif %}">
+                                        {{ user.role|capitalize }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-12 col-lg-6">
+            
+            <div class="card shadow-sm mb-4 border-success">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">💸 {{ translate('All Transactions & Orders') }}</h5>
+                </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>{{ translate('Date') }}</th>
+                                <th>{{ translate('Item') }}</th>
+                                <th>{{ translate('Farmer -> Buyer') }}</th>
+                                <th>{{ translate('Value') }}</th>
+                                <th>{{ translate('Status') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td class="text-muted small">{{ order.date.strftime('%Y-%m-%d') }}</td>
+                                <td class="fw-bold">{{ order.quantity }}kg {{ translate(order.product.name) }}</td>
+                                <td class="small">{{ order.farmer.username }} ➡️ {{ order.consumer.username }}</td>
+                                <td class="fw-bold text-success">₹{{ order.quantity * order.product.price }}</td>
+                                <td>
+                                    <span class="badge {% if order.status == 'Accepted' %}bg-success{% elif order.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %}">
+                                        {{ translate(order.status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center text-muted py-3">{{ translate('No orders in the system.') }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-info text-dark">
+                    <h5 class="mb-0 fs-6 fs-md-5">📦 {{ translate('Global Market Inventory') }}</h5>
+                </div>
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-sm table-hover mb-0 align-middle">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>{{ translate('Item') }}</th>
+                                <th>{{ translate('Farmer') }}</th>
+                                <th>{{ translate('Location') }}</th>
+                                <th>{{ translate('Stock Left') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in products %}
+                            <tr>
+                                <td class="fw-bold">{{ translate(p.name) }} <small class="text-muted d-block">₹{{ p.price }}/kg</small></td>
+                                <td>{{ p.farmer.username }}</td>
+                                <td class="small text-muted">{{ translate(p.location) if p.location else '-' }}</td>
+                                <td class="{% if p.quantity == 0 %}text-danger fw-bold{% endif %}">{{ p.quantity }} kg</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="4" class="text-center text-muted py-3">{{ translate('No products in the market.') }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,9 @@
+Flask
+Flask-Login
+pandas
+numpy
+mongoengine
+googletrans==4.0.0-rc1
+twilio
+werkzeug
+gunicorn

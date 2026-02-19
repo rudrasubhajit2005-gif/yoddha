@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="text-center mb-4">{{ translate('Login') }}</h2>
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">{{ translate('Username') }}</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ translate('Password') }}</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">{{ translate('Login') }}</button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-3 text-center">
+                        <a href="{{ url_for('forgot_password') }}" class="text-decoration-none">
+                            {{ translate('Forgot Password?') }}
+                        </a>
+                    </div>
+
+                    <div class="mt-3 text-center">
+                        <small>{{ translate("Don't have an account?") }} 
+                            <a href="/register">{{ translate('Register here') }}</a>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">{{ translate('Customer Service') }}</h3>
+
+                </div>
+
+                <div class="card-body p-4">
+
+                    <p class="lead">{{ translate('Have a question or issue with an order? Our team is here to help.') }}</p>
+
+                   
+
+                    <div class="row mb-4">
+
+                        <div class="col-md-6 mb-3">
+
+                            <div class="p-3 bg-light rounded h-100 border">
+
+                                <h5>📞 {{ translate('Phone Support') }}</h5>
+
+                                <p class="text-primary fw-bold mb-0">+91 98765 43210</p>
+
+                                <small class="text-muted">{{ translate('Available 9 AM - 6 PM') }}</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <div class="p-3 bg-light rounded h-100 border">
+
+                                <h5>📧 {{ translate('Email Support') }}</h5>
+
+                                <p class="text-primary fw-bold mb-0">support@smartfarmer.com</p>
+
+                                <small class="text-muted">{{ translate('Response within 24 hours') }}</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <hr>
+
+
+
+                    <h5>{{ translate('Send us a Message') }}</h5>
+
+                    <form>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">{{ translate('Your Name') }}</label>
+
+                            <input type="text" class="form-control" placeholder="Name">
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">{{ translate('Message') }}</label>
+
+                            <textarea class="form-control" rows="4" placeholder="{{ translate('Describe your issue...') }}"></textarea>
+
+                        </div>
+
+                        <button type="button" class="btn btn-success w-100">{{ translate('Submit Request') }}</button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

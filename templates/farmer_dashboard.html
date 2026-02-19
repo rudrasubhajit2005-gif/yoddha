@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-0 px-md-3">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4 gap-2">
+        <h1 class="fs-2">{{ translate('Farmer Dashboard') }} 👨‍🌾</h1>
+        <span class="badge bg-success fs-6 align-self-start align-self-sm-auto">{{ translate('Sales') }}: {{ sales }}</span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">➕ {{ translate('List New Produce') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/add_product" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">{{ translate('Product Name') }}</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Potato" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">{{ translate('Product Image') }}</label>
+                            <input type="file" name="image" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small">{{ translate('Price (₹/kg)') }}</label>
+                                <input type="number" name="price" step="0.01" class="form-control" required>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small">{{ translate('Quantity (kg)') }}</label>
+                                <input type="number" name="quantity" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">{{ translate('Category') }}</label>
+                            <select name="category" class="form-select">
+                                <option value="Vegetable">{{ translate('Vegetable') }}</option>
+                                <option value="Fruit">{{ translate('Fruit') }}</option>
+                                <option value="Grain">{{ translate('Grain') }}</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold small">📍 {{ translate('Farm Location') }}</label>
+                            <input type="text" name="location" class="form-control" placeholder="{{ translate('e.g., Nashik, Maharashtra') }}" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg w-100 shadow-sm">{{ translate('Add to Market') }}</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm mb-4 border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">📈 {{ translate('AI Demand Check') }}</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/check_forecast" method="POST" class="d-flex flex-column flex-sm-row gap-2">
+                        <input type="text" name="product_check" class="form-control" placeholder="{{ translate('Crop name') }}">
+                        <button type="submit" class="btn btn-primary px-4">{{ translate('Analyze') }}</button>
+                    </form>
+                    {% if forecast_result %}
+                    <div class="alert alert-info mt-3 shadow-sm border-0">
+                        <p class="mb-0"><strong>{{ translate(forecast_result.name) }}:</strong> {{ translate(forecast_result.trend) }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            
+            <div class="card shadow-sm mb-4 border-warning">
+                <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fs-6 fs-md-5">🔔 {{ translate('Manage Orders') }}</h5>
+                </div>
+                <div style="max-height: 350px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for order in orders %}
+                            {% if order.status in ['Pending', 'Accepted'] %}
+                            <li class="list-group-item d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center bg-light gap-3 py-3">
+                                <div class="w-100">
+                                    <strong class="fs-5 text-dark">{{ order.quantity }}kg of {{ translate(order.product.name) }}</strong><br>
+                                    <small class="text-muted d-block mt-1">
+                                        {{ translate('Buyer') }}: <strong class="text-dark">{{ order.consumer.username }}</strong>
+                                        
+                                        {% if order.status == 'Accepted' %}
+                                            <br>📞 <strong class="text-success fs-6">{{ order.consumer.phone }}</strong>
+                                        {% else %}
+                                            <br>🔒 <span class="fst-italic text-muted">{{ translate('Phone hidden until accepted') }}</span>
+                                        {% endif %}
+                                        </small>
+                                </div>
+                                <div class="w-100 w-sm-auto text-end">
+                                    {% if order.status == 'Pending' %}
+                                        <div class="btn-group w-100 shadow-sm">
+                                            <a href="/manage_order/{{ order.id }}/accept" class="btn btn-success btn-sm px-3 py-2 fw-bold">{{ translate('Accept') }}</a>
+                                            <a href="/manage_order/{{ order.id }}/reject" class="btn btn-danger btn-sm px-3 py-2 fw-bold">{{ translate('Reject') }}</a>
+                                        </div>
+                                    {% elif order.status == 'Accepted' %}
+                                        <span class="badge bg-success fs-6 py-2 px-3 w-100 shadow-sm">{{ translate('Accepted') }}</span>
+                                    {% endif %}
+                                </div>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="list-group-item text-muted text-center py-4">{{ translate('No orders right now.') }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card shadow-sm overflow-hidden">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">📦 {{ translate('My Inventory') }}</h5>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle text-nowrap">
+                        <thead class="table-light">
+                            <tr>
+                                <th>{{ translate('Image') }}</th>
+                                <th>{{ translate('Item') }}</th>
+                                <th>{{ translate('Location') }}</th>
+                                <th>{{ translate('Price') }}</th>
+                                <th>{{ translate('Stock') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in products %}
+                            <tr>
+                                <td>
+                                    {% if p.image %}
+                                    <img src="{{ url_for('static', filename='product_images/' + p.image) }}" width="40" height="40" class="rounded object-fit-cover shadow-sm">
+                                    {% else %}
+                                    <span class="text-muted small">No Img</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fw-bold">{{ translate(p.name) }}</td>
+                                <td>
+                                    <small class="text-muted">📍 {{ translate(p.location) if p.location else '-' }}</small>
+                                </td>
+                                <td class="text-success fw-bold">₹{{ p.price }}</td>
+                                <td class="{% if p.quantity == 0 %}text-danger fw-bold{% endif %}">{{ p.quantity }} kg</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center text-muted py-4">{{ translate('No products listed.') }}</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

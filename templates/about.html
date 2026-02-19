@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="fw-bold text-success display-4">{{ translate('About Us') }}</h1>
+            <p class="lead mt-3">{{ translate('Connecting farmers directly to your table.') }}</p>
+            <p>
+                {{ translate('Smart Farmer Market was built with a simple mission: to eliminate the middlemen who reduce farmer profits and increase consumer prices.') }}
+            </p>
+            <p>
+                {{ translate('Using advanced AI forecasting, we help farmers know what to grow and help consumers find fresh produce at fair prices.') }}
+            </p>
+            <a href="/register" class="btn btn-primary btn-lg mt-3">{{ translate('Join Our Mission') }}</a>
+        </div>
+        <div class="col-md-6">
+            <div class="p-5 bg-success text-white rounded shadow text-center">
+                <h3>🌾 {{ translate('Empowering Farmers') }}</h3>
+                <h3>🛒 {{ translate('Serving Consumers') }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

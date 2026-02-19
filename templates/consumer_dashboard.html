@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid px-0 px-md-3 mb-5">
+    <h1 class="fs-2 mb-4">{{ translate('Consumer Market') }} 🛒</h1>
+
+    <div class="row g-4 mb-5">
+        <div class="col-12 col-lg-9">
+            
+            <form method="GET" action="/dashboard" class="mb-4">
+                <div class="input-group shadow-sm">
+                    <input type="text" name="q" class="form-control form-control-lg" placeholder="{{ translate('Search crop or location...') }}" value="{{ search_query }}">
+                    <button class="btn btn-success btn-lg px-3 px-md-4" type="submit">🔍 <span class="d-none d-sm-inline">{{ translate('Search') }}</span></button>
+                    {% if search_query %}
+                        <a href="/dashboard" class="btn btn-outline-secondary btn-lg">{{ translate('Clear') }}</a>
+                    {% endif %}
+                </div>
+            </form>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-3 gap-2">
+                <h3 class="fs-4 m-0">{{ translate('Available Fresh Produce') }}</h3>
+                {% if search_query %}
+                    <span class="badge bg-info text-dark align-self-start align-self-sm-auto">{{ translate('Showing results for') }}: "{{ search_query }}"</span>
+                {% endif %}
+            </div>
+
+            <div class="row g-3">
+                {% for p in products %}
+                    {% if p.quantity > 0 %}
+                    <div class="col-12 col-sm-6 col-md-4">
+                        <div class="card shadow-sm h-100 border-0 overflow-hidden">
+                            <div style="height: 180px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                {% if p.image and p.image != 'default.jpg' %}
+                                    <img src="{{ url_for('static', filename='product_images/' + p.image) }}" class="w-100 h-100" style="object-fit: cover;" alt="{{ p.name }}">
+                                {% else %}
+                                    <span class="fs-1">🍎</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fw-bold text-dark fs-5">{{ translate(p.name) }}</h5>
+                                
+                                <p class="mb-3 text-secondary small">
+                                    📍 
+                                    {% if p.location %}
+                                        <span class="fw-bold">{{ translate(p.location) }}</span>
+                                    {% else %}
+                                        <span class="fst-italic">{{ translate('Location not listed') }}</span>
+                                    {% endif %}
+                                </p>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 p-2 bg-light rounded border">
+                                        <span class="text-success fw-bold fs-5">₹{{ p.price }}/kg</span>
+                                        <span class="badge bg-white text-dark border shadow-sm">{{ translate('Available') }}: {{ p.quantity }}kg</span>
+                                    </div>
+                                    
+                                    <form action="/buy/{{ p.id }}" method="POST">
+                                        <div class="input-group input-group-lg shadow-sm">
+                                            <input type="number" name="order_quantity" class="form-control text-center" min="1" max="{{ p.quantity }}" value="1" required style="max-width: 90px;">
+                                            <span class="input-group-text px-2 bg-light">kg</span>
+                                            <button type="submit" class="btn btn-success fw-bold flex-grow-1">{{ translate('Buy') }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="col-12 text-center text-muted py-5 px-3 bg-white rounded shadow-sm border">
+                        <h4>{{ translate('No produce found.') }}</h4>
+                        {% if search_query %}
+                            <p class="mb-0">{{ translate('Try searching for a different crop or location.') }}</p>
+                        {% else %}
+                            <p class="mb-0">{{ translate('Wait for farmers to add their harvest!') }}</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="col-12 col-lg-3 mt-4 mt-lg-0 mb-5">
+            <div class="card shadow-sm sticky-lg-top" style="top: 80px;">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0 fs-6 fs-md-5">🛍️ {{ translate('My Orders') }}</h5>
+                </div>
+                
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <ul class="list-group list-group-flush">
+                        {% for order in orders %}
+                            <li class="list-group-item py-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <strong class="text-dark">{{ order.quantity }}kg {{ translate(order.product.name) }}</strong>
+                                    <span class="badge {% if order.status == 'Accepted' %}bg-success{% elif order.status == 'Rejected' %}bg-danger{% else %}bg-warning text-dark{% endif %} align-self-start mt-1">
+                                        {{ translate(order.status) }}
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted fw-bold">Total: ₹{{ order.quantity * order.product.price }}</small>
+                                    <small class="text-secondary" style="font-size: 0.75rem;">{{ order.date.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                
+                                {% if order.status == 'Accepted' %}
+                                <div class="mt-2 p-2 bg-success bg-opacity-10 border border-success rounded text-success small">
+                                    📞 {{ translate('Farmer') }}: <strong>{{ order.farmer.phone }}</strong>
+                                </div>
+                                {% endif %}
+                                </li>
+                        {% else %}
+                            <li class="list-group-item text-muted text-center py-4">{{ translate('No orders yet') }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
